@@ -1,0 +1,48 @@
+name: Cypress Tests with Allure Report
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  cypress-run:
+    runs-on: [self-hosted, windows]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies and Run Cypress with Allure
+        run: |
+          cd operations-tests
+          echo "Installing dependencies..."
+          npm install
+          echo "Running Cypress tests in headless Chrome..."
+          npx cypress run --spec cypress/e2e/cxt-operations/cxt-ops-customer-record-Internet-Users-Contract-Stop-Alerts-tab.spec.js --browser chrome --headless
+          echo "Generating Allure report..."
+          npx allure generate allure-results --clean -o allure-report
+          npx http-server allure-report -p 5000
+
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: operations-tests/allure-report/**
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: operations-tests/cypress/videos/**
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: operations-tests/cypress/screenshots/**
