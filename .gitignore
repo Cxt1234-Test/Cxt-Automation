@@ -1,0 +1,14 @@
+# node.js
+#
+node_modules/
+npm-debug.log
+
+# Ignore environment variables
+.env
+
+# Ignore allure report & results
+allure-report/
+allure-results/
+
+#ignore screen shots
+cypress/screenshots
